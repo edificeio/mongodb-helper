@@ -153,14 +153,22 @@ public class MongoDb {
 		find(collection, matcher, null, null, -1, -1, 100, callback);
 	}
 
-	public void findOne(String collection, JsonObject matcher, JsonObject keys,
+	public void findOne(String collection, JsonObject matcher, JsonObject keys, JsonArray fetch,
 			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.putString("action", "findone");
 		jo.putString("collection", collection);
 		jo.putObject("matcher", matcher);
 		jo.putObject("keys", keys);
+		if (fetch != null) {
+			jo.putArray("fetch", fetch);
+		}
 		eb.send(address, jo, callback);
+	}
+
+	public void findOne(String collection, JsonObject matcher, JsonObject keys,
+						Handler<Message<JsonObject>> callback) {
+		findOne(collection, matcher, keys, null, callback);
 	}
 
 	public void findOne(String collection, JsonObject matcher,
