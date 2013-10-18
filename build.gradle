@@ -26,12 +26,19 @@ plugins.withType(IdeaPlugin) {
 }
 
 repositories{
-    mavenCentral()
+		maven {
+			credentials {
+				username 'admin'
+				password 'We_1234'
+			}
+			url "http://maven.web-education.net:8081/nexus/content/groups/public"
+		}
 }
 
 dependencies{
   provided "io.vertx:vertx-core:$vertxVersion"
   compile "org.mongodb:mongo-java-driver:$mongoVersion"
+  compile "com.wse:eventbus-wrapper:1.0.0"
 
   testCompile "junit:junit:$junitVersion"
   testCompile "io.vertx:testtools:$toolsVersion"
