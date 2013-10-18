@@ -9,6 +9,7 @@ public class MongoUpdateBuilder {
 	private static final String UNSET = "$unset";
 	private static final String RENAME = "$rename";
 	private static final String PUSH = "$push";
+	private static final String PULL = "$pull";
 
 	private final JsonObject query;
 
@@ -23,6 +24,11 @@ public class MongoUpdateBuilder {
 
 	public MongoUpdateBuilder push(final String key, final Object value) {
 		addToQuery(PUSH, key, value);
+		return this;
+	}
+
+	public MongoUpdateBuilder pull(final String key, final Object value) {
+		addToQuery(PULL, key, value);
 		return this;
 	}
 
