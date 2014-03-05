@@ -39,7 +39,7 @@ repositories{
 dependencies{
   provided "io.vertx:vertx-core:$vertxVersion"
   compile "org.mongodb:mongo-java-driver:$mongoVersion"
-  compile "fr.wseduc.vertx:eventbus-wrapper:1.0.0"
+  compile "fr.wseduc:eventbus-wrapper:1.0.1"
 
   testCompile "junit:junit:$junitVersion"
   testCompile "io.vertx:testtools:$toolsVersion"
