@@ -1,10 +1,10 @@
-package edu.one.core.infra.eventbus;
+package fr.wseduc.mongodb.eventbus;
 
-import com.wse.eventbus.EventBusWrapperFactory;
+import fr.wseduc.vertx.eventbus.EventBusWrapperFactory;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.eventbus.EventBus;
 
-public class EventBusWithMongoDBLoggerFactory implements EventBusWrapperFactory{
+public class EventBusWithMongoDBLoggerFactory implements EventBusWrapperFactory {
 
 	@Override
 	public EventBus getEventBus(Vertx vertx) {

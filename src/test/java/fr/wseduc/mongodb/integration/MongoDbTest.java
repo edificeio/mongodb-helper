@@ -1,4 +1,4 @@
-package edu.one.core.infra.test.integration;
+package fr.wseduc.mongodb.integration;
 
 import static org.vertx.testtools.VertxAssert.assertEquals;
 import static org.vertx.testtools.VertxAssert.testComplete;
@@ -12,7 +12,7 @@ import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.testtools.TestVerticle;
 
-import edu.one.core.infra.MongoDb;
+import fr.wseduc.mongodb.MongoDb;
 
 public class MongoDbTest extends TestVerticle {
 

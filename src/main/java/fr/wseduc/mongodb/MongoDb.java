@@ -1,4 +1,4 @@
-package edu.one.core.infra;
+package fr.wseduc.mongodb;
 
 import java.text.DateFormat;
 import java.text.ParseException;

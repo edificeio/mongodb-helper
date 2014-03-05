@@ -26,6 +26,7 @@ plugins.withType(IdeaPlugin) {
 }
 
 repositories{
+		mavenLocal()
 		maven {
 			credentials {
 				username 'admin'
@@ -38,7 +39,7 @@ repositories{
 dependencies{
   provided "io.vertx:vertx-core:$vertxVersion"
   compile "org.mongodb:mongo-java-driver:$mongoVersion"
-  compile "com.wse:eventbus-wrapper:1.0.0"
+  compile "fr.wseduc.vertx:eventbus-wrapper:1.0.0"
 
   testCompile "junit:junit:$junitVersion"
   testCompile "io.vertx:testtools:$toolsVersion"

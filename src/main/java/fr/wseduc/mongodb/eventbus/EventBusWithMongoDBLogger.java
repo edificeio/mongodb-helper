@@ -1,8 +1,8 @@
-package edu.one.core.infra.eventbus;
+package fr.wseduc.mongodb.eventbus;
 
 import java.util.UUID;
 
-import edu.one.core.infra.MongoDb;
+import fr.wseduc.mongodb.MongoDb;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.buffer.Buffer;

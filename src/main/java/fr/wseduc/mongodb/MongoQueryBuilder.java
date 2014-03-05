@@ -1,4 +1,4 @@
-package edu.one.core.infra;
+package fr.wseduc.mongodb;
 
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
