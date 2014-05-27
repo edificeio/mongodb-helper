@@ -19,7 +19,8 @@ public class EventBusWithMongoDBLogger implements EventBus {
 
 	public EventBusWithMongoDBLogger(EventBus eb) {
 		this.eb = eb;
-		this.mongo = new MongoDb(eb, "wse.mongodb.persistor");
+		this.mongo = MongoDb.getInstance();
+		this.mongo.init(eb, "wse.mongodb.persistor");
 	}
 
 	private <T> JsonObject prepareLog(String address, T message) {

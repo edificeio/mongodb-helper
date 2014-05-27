@@ -17,14 +17,24 @@ import org.vertx.java.core.json.JsonObject;
 public class MongoDb {
 
 	private static final String ISO_DATE_FORMAT = "yyyy-MM-dd HH:mm.ss.SSS";
-	private final EventBus eb;
-	private final String address;
+	private EventBus eb;
+	private String address;
 
 	public static enum WriteConcern {
 		NONE, NORMAL, SAFE, MAJORITY, FSYNC_SAFE, JOURNAL_SAFE, REPLICAS_SAFE;
 	}
 
-	public MongoDb(EventBus eb, String address) {
+	private MongoDb() {}
+
+	private static class MongoDbHolder {
+		private static final MongoDb instance = new MongoDb();
+	}
+
+	public static MongoDb getInstance() {
+		return MongoDbHolder.instance;
+	}
+
+	public void init(EventBus eb, String address) {
 		this.eb = eb;
 		this.address = address;
 	}
@@ -140,17 +150,18 @@ public class MongoDb {
 		jo.putObject("keys", keys);
 		jo.putNumber("skip", skip);
 		jo.putNumber("limit", limit);
+		jo.putNumber("batch_size", batchSize);
 		eb.send(address, jo, callback);
 	}
 
 	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys,
 			Handler<Message<JsonObject>> callback) {
-		find(collection, matcher, sort, keys, -1, -1, 100, callback);
+		find(collection, matcher, sort, keys, -1, -1, Integer.MAX_VALUE, callback);
 	}
 
 	public void find(String collection, JsonObject matcher,
 			Handler<Message<JsonObject>> callback) {
-		find(collection, matcher, null, null, -1, -1, 100, callback);
+		find(collection, matcher, null, null, -1, -1, Integer.MAX_VALUE, callback);
 	}
 
 	public void findOne(String collection, JsonObject matcher, JsonObject keys, JsonArray fetch,
