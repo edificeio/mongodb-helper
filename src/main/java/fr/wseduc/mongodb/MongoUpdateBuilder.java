@@ -57,11 +57,9 @@ public class MongoUpdateBuilder {
 
 	private void addToQuery(String operator, String key, Object value) {
 		JsonObject subquery = query.getObject(operator);
-		if (subquery == null && this.isEmpty()) {
+		if (subquery == null) {
 			subquery = new JsonObject();
 			query.putObject(operator, subquery);
-		} else if (subquery == null) {
-			throw new IllegalArgumentException("You can't have two modifiers in same update query.");
 		}
 		subquery.putValue(key, value);
 	}
