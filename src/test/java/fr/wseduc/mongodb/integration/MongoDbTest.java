@@ -42,7 +42,8 @@ public class MongoDbTest extends TestVerticle {
 				}
 			}
 		});
-		mongo = new MongoDb(eb, "test.persistor");
+		mongo = MongoDb.getInstance();
+		mongo.init(eb, "test.persistor");
 	}
 
 	@Test
