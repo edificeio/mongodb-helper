@@ -25,17 +25,6 @@ plugins.withType(IdeaPlugin) {
   }
 }
 
-repositories{
-		mavenLocal()
-		maven {
-			credentials {
-				username 'admin'
-				password 'We_1234'
-			}
-			url "http://maven.web-education.net:8081/nexus/content/groups/public"
-		}
-}
-
 dependencies{
   provided "io.vertx:vertx-core:$vertxVersion"
   compile "org.mongodb:mongo-java-driver:$mongoVersion"
@@ -47,27 +36,30 @@ dependencies{
 
 def configurePom(def pom) {
 	pom.project {
+    name 'mongodb-helper'
 		description 'Vertx Mongo helper'
 		inceptionYear '2013'
 		packaging 'zip'
-		url 'http://code.web-education.net/projects/one-core'
+		url 'https://github.com/web-education/mongodb-helper'
 
 		developers {
 			developer {
 				id 'dboissin'
 				name 'Damien BOISSIN'
-				email 'damien.boissin@web-educcation.net'
+				email 'damien.boissin@web-education.net'
 			}
 		}
 
 		scm {
-			url 'git@code.web-education.net:one/one-core.git'
+      connection 'scm:git:ssh://git@github.com:web-education/mongodb-helper.git'
+      developerConnection 'scm:git:ssh://git@github.com:web-education/mongodb-helper.git'
+      url 'https://github.com/web-education/mongodb-helper.git'
 		}
 
 		licenses {
 			license {
-				name 'GNU Affero General Public License, Version 2.0'
-				url 'https://www.gnu.org/licenses/agpl.txt'
+        name 'The Apache Software License, Version 2.0'
+        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 				distribution 'repo'
 			}
 		}
