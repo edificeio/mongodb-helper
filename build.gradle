@@ -1,7 +1,4 @@
-apply plugin:'java'
-apply plugin: 'idea'
-apply plugin: 'eclipse'
-apply from: "gradle/maven.gradle"
+apply from: "gradle/vertx.gradle"
 
 configurations {
   provided
