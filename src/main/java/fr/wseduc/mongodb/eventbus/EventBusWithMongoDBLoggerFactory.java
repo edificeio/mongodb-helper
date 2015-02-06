@@ -24,7 +24,7 @@ public class EventBusWithMongoDBLoggerFactory implements EventBusWrapperFactory 
 
 	@Override
 	public EventBus getEventBus(Vertx vertx) {
-		return new EventBusWithMongoDBLogger(vertx.eventBus());
+		return new EventBusWithMongoDBLogger(vertx);
 	}
 
 }

@@ -21,6 +21,7 @@ import java.util.UUID;
 import fr.wseduc.mongodb.MongoDb;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.Vertx;
 import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.eventbus.EventBus;
 import org.vertx.java.core.eventbus.Message;
@@ -37,10 +38,14 @@ public class EventBusWithMongoDBLogger implements EventBus {
 	private final EventBus eb;
 	private final MongoDb mongo;
 
-	public EventBusWithMongoDBLogger(EventBus eb) {
-		this.eb = eb;
+	public EventBusWithMongoDBLogger(Vertx vertx) {
+		this.eb = vertx.eventBus();
+		String node = (String) vertx.sharedData().getMap("server").get("node");
+		if (node == null) {
+			node = "";
+		}
 		this.mongo = MongoDb.getInstance();
-		this.mongo.init(eb, "wse.mongodb.persistor");
+		this.mongo.init(eb, node + "wse.mongodb.persistor");
 	}
 
 	private <T> JsonObject prepareLog(String address, T message) {
