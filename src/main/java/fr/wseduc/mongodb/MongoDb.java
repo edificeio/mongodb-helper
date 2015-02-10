@@ -285,7 +285,12 @@ public class MongoDb {
 	}
 
 	public static Date parseIsoDate(JsonObject date) {
-		Calendar c = DatatypeConverter.parseDateTime(date.getString("$date"));
-		return c.getTime();
+		Object d = date.getValue("$date");
+		if (d instanceof Long) {
+			return new Date((Long) d);
+		} else {
+			Calendar c = DatatypeConverter.parseDateTime((String) d);
+			return c.getTime();
+		}
 	}
 }
