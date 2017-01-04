@@ -246,6 +246,22 @@ public class MongoDb {
 		delete(collection, matcher, null, null);
 	}
 
+	public void bulk(String collection, JsonArray commands, Handler<Message<JsonObject>> callback) {
+		bulk(collection, commands, null, callback);
+	}
+
+	public void bulk(String collection, JsonArray commands, WriteConcern writeConcern,
+			Handler<Message<JsonObject>> callback) {
+		JsonObject jo = new JsonObject();
+		jo.putString("action", "bulk");
+		jo.putString("collection", collection);
+		jo.putArray("commands", commands);
+		if (writeConcern != null) {
+			jo.putString("write_concern", writeConcern.name());
+		}
+		eb.send(address, jo, callback);
+	}
+
 	public void command(String command, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.putString("action", "command");
