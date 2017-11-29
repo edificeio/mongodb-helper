@@ -1,4 +1,16 @@
-apply from: "gradle/vertx.gradle"
+plugins {
+  id 'java'
+  id 'maven'
+}
+
+repositories {
+  jcenter()
+  maven {
+    url "https://oss.sonatype.org/content/repositories/iovertx-3720/"
+  }
+}
+
+sourceCompatibility = '1.8'
 
 configurations {
   provided
@@ -23,18 +35,17 @@ plugins.withType(IdeaPlugin) {
 }
 
 dependencies{
-  provided "io.vertx:vertx-core:$vertxVersion"
+  compile "io.vertx:vertx-core:$vertxVersion"
   compile "org.mongodb:mongo-java-driver:$mongoVersion"
-  compile "fr.wseduc:eventbus-wrapper:$eventbusWrapperVersion"
 
-  testCompile "junit:junit:$junitVersion"
-  testCompile "io.vertx:testtools:$toolsVersion"
 }
 
-repositories {
-  mavenLocal()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-  mavenCentral()
+install {
+  repositories.mavenInstaller {
+    pom.version = "$version"
+    pom.artifactId = 'mongodb-helper'
+    pom.groupId = 'fr.wseduc'
+  }
 }
 
 def configurePom(def pom) {

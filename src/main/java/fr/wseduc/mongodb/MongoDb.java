@@ -24,11 +24,12 @@ import java.util.Date;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.eventbus.EventBus;
-import org.vertx.java.core.eventbus.Message;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 public class MongoDb {
 
@@ -56,15 +57,15 @@ public class MongoDb {
 	}
 
 	public void save(String collection, JsonObject document, WriteConcern writeConcern,
-			Handler<Message<JsonObject>> callback) {
+			final Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "save");
-		jo.putString("collection", collection);
-		jo.putObject("document", document);
+		jo.put("action", "save");
+		jo.put("collection", collection);
+		jo.put("document", document);
 		if (writeConcern != null) {
-			jo.putString("write_concern", writeConcern.name());
+			jo.put("write_concern", writeConcern.name());
 		}
-		eb.send(address, jo, callback);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void save(String collection, JsonObject document,
@@ -79,18 +80,18 @@ public class MongoDb {
 	public void insert(String collection, JsonArray documents, WriteConcern writeConcern,
 			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "insert");
-		jo.putString("collection", collection);
+		jo.put("action", "insert");
+		jo.put("collection", collection);
 		if (documents.size() > 1) {
-			jo.putArray("documents", documents);
-			jo.putBoolean("multiple", true);
+			jo.put("documents", documents);
+			jo.put("multiple", true);
 		} else {
-			jo.putObject("document", (JsonObject) documents.get(0));
+			jo.put("document", documents.getJsonObject(0));
 		}
 		if (writeConcern != null) {
-			jo.putString("write_concern", writeConcern.name());
+			jo.put("write_concern", writeConcern.name());
 		}
-		eb.send(address, jo, callback);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void insert(String collection, JsonArray documents,
@@ -125,16 +126,16 @@ public class MongoDb {
 			boolean upsert, boolean multi, WriteConcern writeConcern,
 			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "update");
-		jo.putString("collection", collection);
-		jo.putObject("criteria", criteria);
-		jo.putObject("objNew", objNew);
-		jo.putBoolean("upsert", upsert);
-		jo.putBoolean("multi", multi);
+		jo.put("action", "update");
+		jo.put("collection", collection);
+		jo.put("criteria", criteria);
+		jo.put("objNew", objNew);
+		jo.put("upsert", upsert);
+		jo.put("multi", multi);
 		if (writeConcern != null) {
-			jo.putString("write_concern", writeConcern.name());
+			jo.put("write_concern", writeConcern.name());
 		}
-		eb.send(address, jo, callback);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void update(String collection, JsonObject criteria, JsonObject objNew,
@@ -159,15 +160,15 @@ public class MongoDb {
 	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys,
 			int skip, int limit, int batchSize, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "find");
-		jo.putString("collection", collection);
-		jo.putObject("matcher", matcher);
-		jo.putObject("sort", sort);
-		jo.putObject("keys", keys);
-		jo.putNumber("skip", skip);
-		jo.putNumber("limit", limit);
-		jo.putNumber("batch_size", batchSize);
-		eb.send(address, jo, callback);
+		jo.put("action", "find");
+		jo.put("collection", collection);
+		jo.put("matcher", matcher);
+		jo.put("sort", sort);
+		jo.put("keys", keys);
+		jo.put("skip", skip);
+		jo.put("limit", limit);
+		jo.put("batch_size", batchSize);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys,
@@ -183,14 +184,14 @@ public class MongoDb {
 	public void findOne(String collection, JsonObject matcher, JsonObject keys, JsonArray fetch,
 			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "findone");
-		jo.putString("collection", collection);
-		jo.putObject("matcher", matcher);
-		jo.putObject("keys", keys);
+		jo.put("action", "findone");
+		jo.put("collection", collection);
+		jo.put("matcher", matcher);
+		jo.put("keys", keys);
 		if (fetch != null) {
-			jo.putArray("fetch", fetch);
+			jo.put("fetch", fetch);
 		}
-		eb.send(address, jo, callback);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void findOne(String collection, JsonObject matcher, JsonObject keys,
@@ -206,19 +207,19 @@ public class MongoDb {
 	public void count(String collection, JsonObject matcher,
 			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "count");
-		jo.putString("collection", collection);
-		jo.putObject("matcher", matcher);
-		eb.send(address, jo, callback);
+		jo.put("action", "count");
+		jo.put("collection", collection);
+		jo.put("matcher", matcher);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void distinct(String collection, String key, JsonObject matcher, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "distinct");
-		jo.putString("collection", collection);
-		jo.putString("key", key);
-		jo.putObject("matcher", matcher);
-		eb.send(address, jo, callback);
+		jo.put("action", "distinct");
+		jo.put("collection", collection);
+		jo.put("key", key);
+		jo.put("matcher", matcher);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void distinct(String collection, String key, Handler<Message<JsonObject>> callback) {
@@ -228,13 +229,13 @@ public class MongoDb {
 	public void delete(String collection, JsonObject matcher, WriteConcern writeConcern,
 			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "delete");
-		jo.putString("collection", collection);
-		jo.putObject("matcher", matcher);
+		jo.put("action", "delete");
+		jo.put("collection", collection);
+		jo.put("matcher", matcher);
 		if (writeConcern != null) {
-			jo.putString("write_concern", writeConcern.name());
+			jo.put("write_concern", writeConcern.name());
 		}
-		eb.send(address, jo, callback);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void delete(String collection, JsonObject matcher,
@@ -253,20 +254,20 @@ public class MongoDb {
 	public void bulk(String collection, JsonArray commands, WriteConcern writeConcern,
 			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "bulk");
-		jo.putString("collection", collection);
-		jo.putArray("commands", commands);
+		jo.put("action", "bulk");
+		jo.put("collection", collection);
+		jo.put("commands", commands);
 		if (writeConcern != null) {
-			jo.putString("write_concern", writeConcern.name());
+			jo.put("write_concern", writeConcern.name());
 		}
-		eb.send(address, jo, callback);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void command(String command, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "command");
-		jo.putString("command", command);
-		eb.send(address, jo, callback);
+		jo.put("action", "command");
+		jo.put("command", command);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void command(String command) {
@@ -275,15 +276,15 @@ public class MongoDb {
 
 	public void getCollections(Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "getCollections");
-		eb.send(address, jo, callback);
+		jo.put("action", "getCollections");
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public void getCollectionStats(String collection, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
-		jo.putString("action", "collectionStats");
-		jo.putString("collection", collection);
-		eb.send(address, jo, callback);
+		jo.put("action", "collectionStats");
+		jo.put("collection", collection);
+		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
 	public static String formatDate(Date date) {
@@ -297,7 +298,7 @@ public class MongoDb {
 	}
 
 	public static JsonObject now() {
-		return new JsonObject().putNumber("$date", System.currentTimeMillis());
+		return new JsonObject().put("$date", System.currentTimeMillis());
 	}
 
 	public static Date parseIsoDate(JsonObject date) {
@@ -309,4 +310,18 @@ public class MongoDb {
 			return c.getTime();
 		}
 	}
+
+	private Handler<AsyncResult<Message<JsonObject>>> getAdapterHandler(final Handler<Message<JsonObject>> callback) {
+		return new Handler<AsyncResult<Message<JsonObject>>>() {
+			@Override
+			public void handle(AsyncResult<Message<JsonObject>> event) {
+				if (event.succeeded()) {
+					callback.handle(event.result());
+				} else {
+					callback.handle(new MongoResultMessage().error(event.cause().getMessage()));
+				}
+			}
+		};
+	}
+
 }

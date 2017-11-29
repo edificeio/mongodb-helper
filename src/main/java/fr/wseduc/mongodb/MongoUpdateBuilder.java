@@ -16,7 +16,7 @@
 
 package fr.wseduc.mongodb;
 
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.json.JsonObject;
 
 public class MongoUpdateBuilder {
 
@@ -78,12 +78,12 @@ public class MongoUpdateBuilder {
 	}
 
 	private void addToQuery(String operator, String key, Object value) {
-		JsonObject subquery = query.getObject(operator);
+		JsonObject subquery = query.getJsonObject(operator);
 		if (subquery == null) {
 			subquery = new JsonObject();
-			query.putObject(operator, subquery);
+			query.put(operator, subquery);
 		}
-		subquery.putValue(key, value);
+		subquery.put(key, value);
 	}
 
 }
