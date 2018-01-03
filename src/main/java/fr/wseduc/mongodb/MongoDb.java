@@ -312,6 +312,7 @@ public class MongoDb {
 	}
 
 	private Handler<AsyncResult<Message<JsonObject>>> getAdapterHandler(final Handler<Message<JsonObject>> callback) {
+		if (callback == null) return null;
 		return new Handler<AsyncResult<Message<JsonObject>>>() {
 			@Override
 			public void handle(AsyncResult<Message<JsonObject>> event) {
