@@ -36,7 +36,7 @@ plugins.withType(IdeaPlugin) {
 }
 
 dependencies{
-  compile "io.vertx:vertx-core:$vertxVersion"
+  compileOnly "io.vertx:vertx-core:$vertxVersion"
   compile "org.mongodb:mongo-java-driver:$mongoVersion"
 
 }
@@ -72,9 +72,9 @@ publishing {
     }
   }
   publications {
-    maven(MavenPublication) {
+    mavenJava(MavenPublication) {
+      from components.java
       groupId "${modowner}"
-      artifact("build/libs/${modname}-${version}.jar")
     }
   }
 }
