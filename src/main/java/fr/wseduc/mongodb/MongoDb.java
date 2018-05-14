@@ -204,6 +204,26 @@ public class MongoDb {
 		findOne(collection, matcher, null, callback);
 	}
 
+	public void findAndModify(String collection, JsonObject matcher, JsonObject update, JsonObject sort,
+			JsonObject fields, Handler<Message<JsonObject>> callback) {
+		findAndModify(collection, matcher, update, sort, fields, false, false, false, callback);
+	}
+
+	public void findAndModify(String collection, JsonObject matcher, JsonObject update, JsonObject sort,
+			JsonObject fields, boolean remove, boolean returnNew, boolean upsert, Handler<Message<JsonObject>> callback) {
+		JsonObject jo = new JsonObject();
+		jo.put("action", "find_and_modify");
+		jo.put("collection", collection);
+		jo.put("matcher", matcher);
+		jo.put("update", update);
+		jo.put("sort", sort);
+		jo.put("fields", fields);
+		jo.put("remove", remove);
+		jo.put("new", returnNew);
+		jo.put("upsert", upsert);
+		eb.send(address, jo, getAdapterHandler(callback));
+	}
+
 	public void count(String collection, JsonObject matcher,
 			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
