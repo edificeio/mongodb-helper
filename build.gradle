@@ -45,7 +45,7 @@ plugins.withType(IdeaPlugin) {
 dependencies{
   compileOnly "io.vertx:vertx-core:$vertxVersion"
   compile "org.mongodb:mongo-java-driver:$mongoVersion"
-
+  testCompile "junit:junit:$junitVersion"
 }
 
 install {

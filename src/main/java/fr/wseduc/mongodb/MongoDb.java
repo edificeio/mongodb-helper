@@ -41,7 +41,8 @@ public class MongoDb {
 		NONE, NORMAL, SAFE, MAJORITY, FSYNC_SAFE, JOURNAL_SAFE, REPLICAS_SAFE;
 	}
 
-	private MongoDb() {}
+	private MongoDb() {
+	}
 
 	private static class MongoDbHolder {
 		private static final MongoDb instance = new MongoDb();
@@ -68,8 +69,7 @@ public class MongoDb {
 		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
-	public void save(String collection, JsonObject document,
-			Handler<Message<JsonObject>> callback) {
+	public void save(String collection, JsonObject document, Handler<Message<JsonObject>> callback) {
 		save(collection, document, null, callback);
 	}
 
@@ -94,13 +94,11 @@ public class MongoDb {
 		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
-	public void insert(String collection, JsonArray documents,
-			Handler<Message<JsonObject>> callback) {
+	public void insert(String collection, JsonArray documents, Handler<Message<JsonObject>> callback) {
 		insert(collection, documents, null, callback);
 	}
 
-	public void insert(String collection, JsonObject document,
-			Handler<Message<JsonObject>> callback) {
+	public void insert(String collection, JsonObject document, Handler<Message<JsonObject>> callback) {
 		insert(collection, new JsonArray().add(document), null, callback);
 	}
 
@@ -115,16 +113,15 @@ public class MongoDb {
 	/**
 	 *
 	 * @param collection
-	 * @param criteria the query argument corresponds to the WHERE statement
-	 * @param objNew the update corresponds to the SET ... statement
-	 * @param upsert if true and document doesn't exist, save it
-	 * @param multi update all document matching query
+	 * @param criteria     the query argument corresponds to the WHERE statement
+	 * @param objNew       the update corresponds to the SET ... statement
+	 * @param upsert       if true and document doesn't exist, save it
+	 * @param multi        update all document matching query
 	 * @param writeConcern
 	 * @param callback
 	 */
-	public void update(String collection, JsonObject criteria, JsonObject objNew,
-			boolean upsert, boolean multi, WriteConcern writeConcern,
-			Handler<Message<JsonObject>> callback) {
+	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
+			WriteConcern writeConcern, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "update");
 		jo.put("collection", collection);
@@ -138,13 +135,12 @@ public class MongoDb {
 		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
-	public void update(String collection, JsonObject criteria, JsonObject objNew,
-			boolean upsert, boolean multi, Handler<Message<JsonObject>> callback) {
+	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
+			Handler<Message<JsonObject>> callback) {
 		update(collection, criteria, objNew, upsert, multi, null, callback);
 	}
 
-	public void update(String collection, JsonObject criteria, JsonObject objNew,
-			boolean upsert, boolean multi) {
+	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi) {
 		update(collection, criteria, objNew, upsert, multi, null, null);
 	}
 
@@ -157,8 +153,8 @@ public class MongoDb {
 		update(collection, criteria, objNew, false, false, null, callback);
 	}
 
-	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys,
-			int skip, int limit, int batchSize, Handler<Message<JsonObject>> callback) {
+	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys, int skip, int limit,
+			int batchSize, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "find");
 		jo.put("collection", collection);
@@ -176,8 +172,7 @@ public class MongoDb {
 		find(collection, matcher, sort, keys, -1, -1, Integer.MAX_VALUE, callback);
 	}
 
-	public void find(String collection, JsonObject matcher,
-			Handler<Message<JsonObject>> callback) {
+	public void find(String collection, JsonObject matcher, Handler<Message<JsonObject>> callback) {
 		find(collection, matcher, null, null, -1, -1, Integer.MAX_VALUE, callback);
 	}
 
@@ -194,13 +189,11 @@ public class MongoDb {
 		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
-	public void findOne(String collection, JsonObject matcher, JsonObject keys,
-						Handler<Message<JsonObject>> callback) {
+	public void findOne(String collection, JsonObject matcher, JsonObject keys, Handler<Message<JsonObject>> callback) {
 		findOne(collection, matcher, keys, null, callback);
 	}
 
-	public void findOne(String collection, JsonObject matcher,
-			Handler<Message<JsonObject>> callback) {
+	public void findOne(String collection, JsonObject matcher, Handler<Message<JsonObject>> callback) {
 		findOne(collection, matcher, null, callback);
 	}
 
@@ -210,7 +203,8 @@ public class MongoDb {
 	}
 
 	public void findAndModify(String collection, JsonObject matcher, JsonObject update, JsonObject sort,
-			JsonObject fields, boolean remove, boolean returnNew, boolean upsert, Handler<Message<JsonObject>> callback) {
+			JsonObject fields, boolean remove, boolean returnNew, boolean upsert,
+			Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "find_and_modify");
 		jo.put("collection", collection);
@@ -224,8 +218,7 @@ public class MongoDb {
 		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
-	public void count(String collection, JsonObject matcher,
-			Handler<Message<JsonObject>> callback) {
+	public void count(String collection, JsonObject matcher, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "count");
 		jo.put("collection", collection);
@@ -258,8 +251,7 @@ public class MongoDb {
 		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
-	public void delete(String collection, JsonObject matcher,
-			Handler<Message<JsonObject>> callback) {
+	public void delete(String collection, JsonObject matcher, Handler<Message<JsonObject>> callback) {
 		delete(collection, matcher, null, callback);
 	}
 
@@ -288,6 +280,10 @@ public class MongoDb {
 		jo.put("action", "command");
 		jo.put("command", command);
 		eb.send(address, jo, getAdapterHandler(callback));
+	}
+
+	public void aggregate(JsonObject command, final Handler<Message<JsonObject>> handler) {
+		this.command(command.toString(), handler);
 	}
 
 	public void command(String command) {
@@ -332,7 +328,8 @@ public class MongoDb {
 	}
 
 	private Handler<AsyncResult<Message<JsonObject>>> getAdapterHandler(final Handler<Message<JsonObject>> callback) {
-		if (callback == null) return null;
+		if (callback == null)
+			return null;
 		return new Handler<AsyncResult<Message<JsonObject>>>() {
 			@Override
 			public void handle(AsyncResult<Message<JsonObject>> event) {
