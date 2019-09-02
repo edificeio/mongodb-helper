@@ -25,6 +25,7 @@ import java.util.Date;
 import javax.xml.bind.DatatypeConverter;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
@@ -284,6 +285,67 @@ public class MongoDb {
 
 	public void aggregate(JsonObject command, final Handler<Message<JsonObject>> handler) {
 		this.command(command.toString(), handler);
+	}
+
+	static boolean isOk(JsonObject body) {
+		return "ok".equals(body.getString("status"));
+	}
+
+	public void getNextBatch(String collection, Long cursorId, final Handler<Message<JsonObject>> handler) {
+		getNextBatch(collection, cursorId, Integer.MAX_VALUE, handler);
+	}
+
+	public void getNextBatch(String collection, Long cursorId, int batchSize, final Handler<Message<JsonObject>> handler){
+		JsonObject command = new JsonObject();
+		command.put("getMore", cursorId);
+		command.put("collection", collection);
+		command.put("batchSize", batchSize);
+		//
+		JsonObject jo = new JsonObject();
+		jo.put("action", "command");
+		jo.put("command", command.toString());
+		eb.send(address, jo, getAdapterHandler(handler));
+	}
+
+	public void aggregateBatched(String collection, JsonObject command, int maxBatch, final Handler<Message<JsonObject>> handler) {
+		aggregate(command, message -> {
+			final JsonObject body = message.body();
+			if(isOk(body)){
+				final JsonObject result = body.getJsonObject("result", new JsonObject());
+				final JsonObject cursor = result.getJsonObject("cursor", new JsonObject());
+				final JsonArray firstBatch = cursor.getJsonArray("firstBatch", new JsonArray());
+				cursor.put("firstBatch", firstBatch);//put if not exists yet
+				Future<JsonObject> future = Future.succeededFuture(cursor);
+				for(int i = 0; i < maxBatch; i++){
+					future = future.compose((previous)->{
+						Long cursorId = previous.getLong("id",0l);
+						Future<JsonObject> next = Future.future();
+						if(cursorId > 0) {
+							getNextBatch(collection, cursorId, nextMsg->{
+								JsonObject nextBody = nextMsg.body();
+								if(isOk(nextBody)) {
+									final JsonObject nextCursor = nextBody.getJsonObject("result", new JsonObject()).getJsonObject("cursor", new JsonObject());
+									final JsonArray nextBatch = nextCursor.getJsonArray("nextBatch", new JsonArray());
+									firstBatch.addAll(nextBatch);
+									next.complete(nextCursor);
+								}else{
+									next.complete(new JsonObject());
+								}
+							});
+						} else {
+							next.complete(new JsonObject());
+						}
+						//
+						return next;
+					});
+				}
+				future.setHandler(res->{
+					handler.handle(new MongoResultMessage(body));
+				});
+			}else{
+				handler.handle(message);
+			}
+		});
 	}
 
 	public void command(String command) {
