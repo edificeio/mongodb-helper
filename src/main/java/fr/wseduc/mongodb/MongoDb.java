@@ -461,6 +461,11 @@ public class MongoDb {
 		return new JsonObject().put("$date", System.currentTimeMillis());
 	}
 
+	public static JsonObject offsetFromNow(long offsetInSeconds)
+	{
+		return new JsonObject().put("$date", System.currentTimeMillis() + (offsetInSeconds * 1000));
+	}
+
 	public static Date parseIsoDate(JsonObject date) {
 		Object d = date.getValue("$date");
 		if (d instanceof Long) {
