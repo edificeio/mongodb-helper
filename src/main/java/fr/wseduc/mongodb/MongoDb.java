@@ -33,15 +33,10 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-public class MongoDb {
+public class MongoDb implements MongoDbAPI {
 
-	private static final String ISO_DATE_FORMAT = "yyyy-MM-dd HH:mm.ss.SSS";
 	private EventBus eb;
 	private String address;
-
-	public static enum WriteConcern {
-		NONE, NORMAL, SAFE, MAJORITY, FSYNC_SAFE, JOURNAL_SAFE, REPLICAS_SAFE;
-	}
 
 	private MongoDb() {
 	}
