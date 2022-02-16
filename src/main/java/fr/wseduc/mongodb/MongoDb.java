@@ -20,6 +20,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -467,12 +468,20 @@ public class MongoDb implements MongoDbAPI {
 		return new JsonObject().put("$date", date.getTime());
 	}
 
+	public static JsonObject toMongoDate(final LocalDateTime date) {
+		return new JsonObject().put("$date", date.toInstant(ZoneOffset.UTC).toEpochMilli());
+	}
+
 	public static JsonObject nowISO() {
 		return new JsonObject().put("$date", OffsetDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 	}
 
 	public static JsonObject toMongoDateISO(final Date date) {
 		return new JsonObject().put("$date", OffsetDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+	}
+
+	public static JsonObject toMongoDateISO(final LocalDateTime date) {
+		return new JsonObject().put("$date", OffsetDateTime.ofInstant(date.toInstant(ZoneOffset.UTC), ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 	}
 
 	public static JsonObject offsetFromNow(long offsetInSeconds)
