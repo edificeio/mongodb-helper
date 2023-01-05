@@ -16,6 +16,7 @@
 
 package fr.wseduc.mongodb;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 public class MongoUpdateBuilder {
@@ -46,6 +47,14 @@ public class MongoUpdateBuilder {
 
 	public MongoUpdateBuilder push(final String key, final Object value) {
 		addToQuery(PUSH, key, value);
+		return this;
+	}
+
+	public MongoUpdateBuilder push(final String key, final Object value, final int position) {
+		final JsonObject valueInsert = new JsonObject()
+				.put("$each", new JsonArray().add(value))
+				.put("$position", position);
+		addToQuery(PUSH, key, valueInsert);
 		return this;
 	}
 
