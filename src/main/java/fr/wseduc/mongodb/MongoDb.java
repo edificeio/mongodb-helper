@@ -369,8 +369,11 @@ public class MongoDb {
 		this.command(command.toString(), handler);
 	}
 
-	static boolean isOk(JsonObject body) {
+	public static boolean isOk(JsonObject body) {
 		return "ok".equals(body.getString("status"));
+	}
+	public static String toErrorStr(JsonObject body) {
+		return body.getString("error", body.getString("message", "query helper error"));
 	}
 
 	public void getNextBatch(String collection, Long cursorId, final Handler<Message<JsonObject>> handler) {
