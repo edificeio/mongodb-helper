@@ -59,6 +59,10 @@ public class MongoDb implements MongoDbAPI {
 		this.address = address;
 	}
 
+	public boolean isInitialized() {
+		return this.eb != null && this.address != null;
+	}
+
 	public void save(String collection, JsonObject document, WriteConcern writeConcern,
 			final Handler<Message<JsonObject>> callback) {
 		save(collection, document, writeConcern, null, callback);
