@@ -33,6 +33,7 @@ import com.mongodb.ReadPreference;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
@@ -79,9 +80,9 @@ public class MongoDb implements MongoDbAPI {
 			jo.put("write_concern", writeConcern.name());
 		}
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -113,9 +114,9 @@ public class MongoDb implements MongoDbAPI {
 			jo.put("write_concern", writeConcern.name());
 		}
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -163,9 +164,9 @@ public class MongoDb implements MongoDbAPI {
 			jo.put("write_concern", writeConcern.name());
 		}
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -212,9 +213,9 @@ public class MongoDb implements MongoDbAPI {
 			jo.put("read_preference", readPreference.getName());
 		}
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -251,9 +252,9 @@ public class MongoDb implements MongoDbAPI {
 			jo.put("fetch", fetch);
 		}
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -290,9 +291,9 @@ public class MongoDb implements MongoDbAPI {
 		jo.put("new", returnNew);
 		jo.put("upsert", upsert);
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -308,7 +309,7 @@ public class MongoDb implements MongoDbAPI {
 		if(readPreference != null){
 			jo.put("read_preference", readPreference.getName());
 		}
-		eb.send(address, jo, getAdapterHandler(callback));
+		eb.request(address, jo, getAdapterHandler(callback));
 	}
 
 	public void distinct(String collection, String key, JsonObject matcher, Handler<Message<JsonObject>> callback) {
@@ -317,7 +318,7 @@ public class MongoDb implements MongoDbAPI {
 		jo.put("collection", collection);
 		jo.put("key", key);
 		jo.put("matcher", matcher);
-		eb.send(address, jo, getAdapterHandler(callback));
+		eb.request(address, jo, getAdapterHandler(callback));
 	}
 
 	public void distinct(String collection, String key, Handler<Message<JsonObject>> callback) {
@@ -339,9 +340,9 @@ public class MongoDb implements MongoDbAPI {
 			jo.put("write_concern", writeConcern.name());
 		}
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -372,9 +373,9 @@ public class MongoDb implements MongoDbAPI {
 			jo.put("write_concern", writeConcern.name());
 		}
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -387,9 +388,9 @@ public class MongoDb implements MongoDbAPI {
 		jo.put("action", "command");
 		jo.put("command", command);
 		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
+			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
+			eb.request(address, jo, getAdapterHandler(callback));
 		}
 	}
 
@@ -417,7 +418,7 @@ public class MongoDb implements MongoDbAPI {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "command");
 		jo.put("command", command.toString());
-		eb.send(address, jo, getAdapterHandler(handler));
+		eb.request(address, jo, getAdapterHandler(handler));
 	}
 
 	public void aggregateBatched(String collection, JsonObject command, int maxBatch, final Handler<Message<JsonObject>> handler) {
@@ -432,7 +433,7 @@ public class MongoDb implements MongoDbAPI {
 				for(int i = 0; i < maxBatch; i++){
 					future = future.compose((previous)->{
 						Long cursorId = previous.getLong("id",0l);
-						Future<JsonObject> next = Future.future();
+						Promise<JsonObject> next = Promise.promise();
 						if(cursorId > 0) {
 							getNextBatch(collection, cursorId, nextMsg->{
 								JsonObject nextBody = nextMsg.body();
@@ -449,10 +450,10 @@ public class MongoDb implements MongoDbAPI {
 							next.complete(new JsonObject());
 						}
 						//
-						return next;
+						return next.future();
 					});
 				}
-				future.setHandler(res->{
+				future.onComplete(res->{
 					handler.handle(new MongoResultMessage(body));
 				});
 			}else{
@@ -468,14 +469,14 @@ public class MongoDb implements MongoDbAPI {
 	public void getCollections(Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "getCollections");
-		eb.send(address, jo, getAdapterHandler(callback));
+		eb.request(address, jo, getAdapterHandler(callback));
 	}
 
 	public void getCollectionStats(String collection, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "collectionStats");
 		jo.put("collection", collection);
-		eb.send(address, jo, getAdapterHandler(callback));
+		eb.request(address, jo, getAdapterHandler(callback));
 	}
 
 	public static String formatDate(Date date) {
