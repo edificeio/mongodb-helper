@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.edifice</groupId>
+        <artifactId>edifice-parent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>fr.wseduc</groupId>
+    <artifactId>mongodb-helper</artifactId>
+    <version>4.0-b2school-SNAPSHOT</version>
+
+    <repositories>
+        <repository>
+            <id>ode</id>
+            <name>ODE Repository</name>
+            <url>https://maven.opendigitaleducation.com/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+
+    <properties>
+        <mongo.version>4.8.1</mongo.version>
+        <junit.version>4.13.2</junit.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>fr.wseduc</groupId>
+            <artifactId>web-utils</artifactId>
+            <version>3.0-b2school-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>${vertxVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-codegen</artifactId>
+            <version>${vertxVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>${mongo.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jacksonDatabindVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+</project>

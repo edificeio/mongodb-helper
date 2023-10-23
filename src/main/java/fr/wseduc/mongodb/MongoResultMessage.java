@@ -1,6 +1,7 @@
 package fr.wseduc.mongodb;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -67,18 +68,9 @@ public class MongoResultMessage implements Message<JsonObject> {
 
 	}
 
-	@Override
-	public <R> void reply(Object message, Handler<AsyncResult<Message<R>>> replyHandler) {
-
-	}
 
 	@Override
 	public void reply(Object message, DeliveryOptions options) {
-
-	}
-
-	@Override
-	public <R> void reply(Object message, DeliveryOptions options, Handler<AsyncResult<Message<R>>> replyHandler) {
 
 	}
 
@@ -87,4 +79,23 @@ public class MongoResultMessage implements Message<JsonObject> {
 
 	}
 
+	@Override
+	public <R> Future<Message<R>> replyAndRequest(@io.vertx.codegen.annotations.Nullable Object message, DeliveryOptions options) {
+		return null;
+	}
+
+	@Override
+	public <R> void replyAndRequest(@io.vertx.codegen.annotations.Nullable Object message, Handler<AsyncResult<Message<R>>> replyHandler) {
+		Message.super.replyAndRequest(message, replyHandler);
+	}
+
+	@Override
+	public <R> Future<Message<R>> replyAndRequest(@io.vertx.codegen.annotations.Nullable Object message) {
+		return Message.super.replyAndRequest(message);
+	}
+
+	@Override
+	public <R> void replyAndRequest(@io.vertx.codegen.annotations.Nullable Object message, DeliveryOptions options, Handler<AsyncResult<Message<R>>> replyHandler) {
+		Message.super.replyAndRequest(message, options, replyHandler);
+	}
 }

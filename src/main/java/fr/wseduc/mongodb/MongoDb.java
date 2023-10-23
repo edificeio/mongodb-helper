@@ -19,20 +19,15 @@ package fr.wseduc.mongodb;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
-
-import javax.xml.bind.DatatypeConverter;
 
 import com.mongodb.ReadPreference;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
@@ -43,6 +38,10 @@ public class MongoDb implements MongoDbAPI {
 
 	private EventBus eb;
 	private String address;
+
+	public static final DateTimeFormatter dtf = DateTimeFormatter.ISO_DATE;
+	public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+
 
 	private MongoDb() {
 	}
@@ -78,11 +77,7 @@ public class MongoDb implements MongoDbAPI {
 		if (writeConcern != null) {
 			jo.put("write_concern", writeConcern.name());
 		}
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void save(String collection, JsonObject document, Handler<Message<JsonObject>> callback) {
@@ -112,11 +107,7 @@ public class MongoDb implements MongoDbAPI {
 		if (writeConcern != null) {
 			jo.put("write_concern", writeConcern.name());
 		}
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void insert(String collection, JsonArray documents, Handler<Message<JsonObject>> callback) {
@@ -167,11 +158,7 @@ public class MongoDb implements MongoDbAPI {
 			jo.put("write_concern", writeConcern.name());
 		}
 
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
@@ -235,11 +222,7 @@ public class MongoDb implements MongoDbAPI {
 		if(readPreference != null){
 			jo.put("read_preference", readPreference.getName());
 		}
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys,
@@ -274,11 +257,7 @@ public class MongoDb implements MongoDbAPI {
 		if (fetch != null) {
 			jo.put("fetch", fetch);
 		}
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void findOne(String collection, JsonObject matcher, JsonObject keys, Handler<Message<JsonObject>> callback) {
@@ -313,11 +292,7 @@ public class MongoDb implements MongoDbAPI {
 		jo.put("remove", remove);
 		jo.put("new", returnNew);
 		jo.put("upsert", upsert);
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void count(String collection, JsonObject matcher, Handler<Message<JsonObject>> callback) {
@@ -332,7 +307,7 @@ public class MongoDb implements MongoDbAPI {
 		if(readPreference != null){
 			jo.put("read_preference", readPreference.getName());
 		}
-		eb.send(address, jo, getAdapterHandler(callback));
+		sendRequest(jo, null, callback);
 	}
 
 	public void distinct(String collection, String key, JsonObject matcher, Handler<Message<JsonObject>> callback) {
@@ -341,7 +316,7 @@ public class MongoDb implements MongoDbAPI {
 		jo.put("collection", collection);
 		jo.put("key", key);
 		jo.put("matcher", matcher);
-		eb.send(address, jo, getAdapterHandler(callback));
+		sendRequest(jo, null, callback);
 	}
 
 	public void distinct(String collection, String key, Handler<Message<JsonObject>> callback) {
@@ -362,11 +337,7 @@ public class MongoDb implements MongoDbAPI {
 		if (writeConcern != null) {
 			jo.put("write_concern", writeConcern.name());
 		}
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void delete(String collection, JsonObject matcher, Handler<Message<JsonObject>> callback) {
@@ -395,11 +366,7 @@ public class MongoDb implements MongoDbAPI {
 		if (writeConcern != null) {
 			jo.put("write_concern", writeConcern.name());
 		}
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void command(String command, Handler<Message<JsonObject>> callback) {
@@ -410,11 +377,7 @@ public class MongoDb implements MongoDbAPI {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "command");
 		jo.put("command", command);
-		if (deliveryOptions != null) {
-			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
-		} else {
-			eb.send(address, jo, getAdapterHandler(callback));
-		}
+		sendRequest(jo, deliveryOptions, callback);
 	}
 
 	public void aggregate(JsonObject command, final Handler<Message<JsonObject>> handler) {
@@ -441,7 +404,7 @@ public class MongoDb implements MongoDbAPI {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "command");
 		jo.put("command", command.toString());
-		eb.send(address, jo, getAdapterHandler(handler));
+		sendRequest(jo, handler);
 	}
 
 	public void aggregateBatched(String collection, JsonObject command, int maxBatch, final Handler<Message<JsonObject>> handler) {
@@ -456,7 +419,7 @@ public class MongoDb implements MongoDbAPI {
 				for(int i = 0; i < maxBatch; i++){
 					future = future.compose((previous)->{
 						Long cursorId = previous.getLong("id",0l);
-						Future<JsonObject> next = Future.future();
+						Promise<JsonObject> next = Promise.promise();
 						if(cursorId > 0) {
 							getNextBatch(collection, cursorId, nextMsg->{
 								JsonObject nextBody = nextMsg.body();
@@ -473,10 +436,10 @@ public class MongoDb implements MongoDbAPI {
 							next.complete(new JsonObject());
 						}
 						//
-						return next;
+						return next.future();
 					});
 				}
-				future.setHandler(res->{
+				future.onComplete(res->{
 					handler.handle(new MongoResultMessage(body));
 				});
 			}else{
@@ -492,14 +455,14 @@ public class MongoDb implements MongoDbAPI {
 	public void getCollections(Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "getCollections");
-		eb.send(address, jo, getAdapterHandler(callback));
+		sendRequest(jo, callback);
 	}
 
 	public void getCollectionStats(String collection, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "collectionStats");
 		jo.put("collection", collection);
-		eb.send(address, jo, getAdapterHandler(callback));
+		sendRequest(jo, callback);
 	}
 
 	public static String formatDate(Date date) {
@@ -513,15 +476,15 @@ public class MongoDb implements MongoDbAPI {
 	}
 
 	public static JsonObject now() {
-		return new JsonObject().put("$date", System.currentTimeMillis());
+		return nowISO();
 	}
 
 	public static JsonObject toMongoDate(final Date date) {
-		return new JsonObject().put("$date", date.getTime());
+		return toMongoDateISO(date);
 	}
 
 	public static JsonObject toMongoDate(final LocalDateTime date) {
-		return new JsonObject().put("$date", date.toInstant(ZoneOffset.UTC).toEpochMilli());
+		return toMongoDateISO(date);
 	}
 
 	public static JsonObject nowISO() {
@@ -538,7 +501,7 @@ public class MongoDb implements MongoDbAPI {
 
 	public static JsonObject offsetFromNow(long offsetInSeconds)
 	{
-		return new JsonObject().put("$date", System.currentTimeMillis() + (offsetInSeconds * 1000));
+		return toMongoDateISO(new Date(System.currentTimeMillis() + offsetInSeconds));
 	}
 
 	public static Date parseIsoDate(JsonObject date) {
@@ -546,24 +509,43 @@ public class MongoDb implements MongoDbAPI {
 		if (d instanceof Long) {
 			return new Date((Long) d);
 		} else {
-			Calendar c = DatatypeConverter.parseDateTime((String) d);
-			return c.getTime();
-		}
+			return Date.from(OffsetDateTime.parse((String)d).toInstant());
+    }
 	}
 
 	private Handler<AsyncResult<Message<JsonObject>>> getAdapterHandler(final Handler<Message<JsonObject>> callback) {
 		if (callback == null)
 			return null;
-		return new Handler<AsyncResult<Message<JsonObject>>>() {
-			@Override
-			public void handle(AsyncResult<Message<JsonObject>> event) {
-				if (event.succeeded()) {
-					callback.handle(event.result());
-				} else {
-					callback.handle(new MongoResultMessage().error(event.cause().getMessage()));
-				}
-			}
-		};
+		return event -> {
+      if (event.succeeded()) {
+        callback.handle(event.result());
+      } else {
+        callback.handle(new MongoResultMessage().error(event.cause().getMessage()));
+      }
+    };
 	}
 
+	private Future<Message<JsonObject>> sendRequest(final JsonObject payload,
+																									final Handler<Message<JsonObject>> callback) {
+		return sendRequest(payload, null, callback);
+	}
+
+	private Future<Message<JsonObject>> sendRequest(final JsonObject payload,
+																									final DeliveryOptions deliveryOptions,
+																									final Handler<Message<JsonObject>> callback) {
+		Future<Message<JsonObject>> future;
+		Handler<AsyncResult<Message<JsonObject>>> handler;
+		if (deliveryOptions == null) {
+			future = eb.request(address, payload);
+			handler = getAdapterHandler(callback);
+		} else {
+			future = eb.request(address, payload, deliveryOptions);
+			handler = getAdapterHandler(callback);
+		}
+		return future.onComplete(e -> {
+			if(handler != null) {
+				handler.handle(e);
+			}
+		});
+	}
 }

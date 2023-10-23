@@ -2,10 +2,9 @@ package fr.wseduc.mongodb;
 
 import java.util.Optional;
 
-import com.mongodb.QueryBuilder;
-
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import org.bson.conversions.Bson;
 
 public class AggregationsBuilder {
 	private final JsonObject object = new JsonObject();
@@ -58,7 +57,7 @@ public class AggregationsBuilder {
 		return this;
 	}
 
-	public AggregationsBuilder withMatch(QueryBuilder query) {
+	public AggregationsBuilder withMatch(Bson query) {
 		JsonObject aggr = new JsonObject();
 		aggr.put("$match", MongoQueryBuilder.build(query));
 
