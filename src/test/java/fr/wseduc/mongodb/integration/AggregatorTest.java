@@ -2,9 +2,8 @@ package fr.wseduc.mongodb.integration;
 
 import java.util.Optional;
 
+import com.mongodb.client.model.Filters;
 import org.junit.Test;
-
-import com.mongodb.QueryBuilder;
 
 import fr.wseduc.mongodb.AggregationsBuilder;
 import io.vertx.core.json.JsonObject;
@@ -33,13 +32,13 @@ public class AggregatorTest {
 				"	     { \"$match\": { \"test\":\"test\" } },\n" + //
 				"	     { \"$project\": { \"title\":1 } }\n" + //
 				"	],\n" + //
-				"	\"allowDiskUse\":true\n" + //
+				"\"cursor\":{\"batchSize\":2147483647},\"allowDiskUse\":true\n" + //
 				"}";
 		JsonObject command = AggregationsBuilder.startWithCollection("test").withAllowDiskUse(true)//
 				.withGraphLookup("uid1", "id", "parentId", "tree", Optional.of(5), Optional.of("depth"),
 						Optional.of(new JsonObject().put("fname", "nabil")))//
 				.withLimit(5)//
-				.withMatch(QueryBuilder.start("test").is("test"))//
+				.withMatch(Filters.eq("test", "test"))//
 				.withProjection(new JsonObject().put("title", 1))//
 				.getCommand();
 		Assert.assertEquals(new JsonObject(aggregationQuery), command);
@@ -49,7 +48,7 @@ public class AggregatorTest {
 	public void shouldGenerateGroupQuery() {
 		final String aggregationQuery = "{\n" + //
 				"	\"aggregate\":\"test\",\n" + //
-				"	\"allowDiskUse\":true,\n" + //
+				"	\"allowDiskUse\":true,\"cursor\":{\"batchSize\":2147483647},\n" + //
 				"	\"pipeline\":[\n" + //
 				"		 {\"$group\":{ \"_id\" : \"notifiedUsers\"}},\n" + //
 				"	     {\"$unwind\":\"$recipients\"},\n" + //
@@ -60,7 +59,7 @@ public class AggregatorTest {
 		JsonObject command = AggregationsBuilder.startWithCollection("test").withAllowDiskUse(true)//
 				.withGroup(new JsonObject().put("_id", "notifiedUsers"))//
 				.withUnwind("$recipients")//
-				.withMatch(QueryBuilder.start("test").is("test"))//
+				.withMatch(Filters.eq("test", "test"))//
 				.withProjection(new JsonObject().put("title", 1))//
 				.getCommand();
 		Assert.assertEquals(new JsonObject(aggregationQuery), command);
