@@ -79,11 +79,20 @@ public class MongoDb implements MongoDbAPI {
 		if (writeConcern != null) {
 			jo.put("write_concern", writeConcern.name());
 		}
+		Future<Message<JsonObject>> future;
+		Handler<AsyncResult<Message<JsonObject>>> handler;
 		if (deliveryOptions != null) {
-			eb.request(address, jo, deliveryOptions, getAdapterHandler(callback));
+			future = eb.request(address, jo, deliveryOptions);
+			handler = getAdapterHandler(callback);
 		} else {
-			eb.request(address, jo, getAdapterHandler(callback));
+			future = eb.request(address, jo);
+			handler = getAdapterHandler(callback);
 		}
+		future.onComplete(e -> {
+			if(handler != null) {
+				handler.handle(e);
+			}
+		});
 	}
 
 	public void save(String collection, JsonObject document, Handler<Message<JsonObject>> callback) {
