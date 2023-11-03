@@ -33,7 +33,7 @@ public class AggregatorTest {
 				"	     { \"$match\": { \"test\":\"test\" } },\n" + //
 				"	     { \"$project\": { \"title\":1 } }\n" + //
 				"	],\n" + //
-				"	\"allowDiskUse\":true\n" + //
+				"\"cursor\":{\"batchSize\":2147483647},\"allowDiskUse\":true\n" + //
 				"}";
 		JsonObject command = AggregationsBuilder.startWithCollection("test").withAllowDiskUse(true)//
 				.withGraphLookup("uid1", "id", "parentId", "tree", Optional.of(5), Optional.of("depth"),
@@ -49,7 +49,7 @@ public class AggregatorTest {
 	public void shouldGenerateGroupQuery() {
 		final String aggregationQuery = "{\n" + //
 				"	\"aggregate\":\"test\",\n" + //
-				"	\"allowDiskUse\":true,\n" + //
+				"	\"allowDiskUse\":true,\"cursor\":{\"batchSize\":2147483647},\n" + //
 				"	\"pipeline\":[\n" + //
 				"		 {\"$group\":{ \"_id\" : \"notifiedUsers\"}},\n" + //
 				"	     {\"$unwind\":\"$recipients\"},\n" + //
