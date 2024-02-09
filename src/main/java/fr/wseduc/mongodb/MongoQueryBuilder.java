@@ -16,15 +16,21 @@
 
 package fr.wseduc.mongodb;
 
-import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
+import com.mongodb.*;
 import io.vertx.core.json.JsonObject;
+import org.bson.json.JsonMode;
+import org.bson.json.JsonWriterSettings;
 
 public class MongoQueryBuilder {
 
 	public static JsonObject build(QueryBuilder queryBuilder) {
 		DBObject dbo = queryBuilder.get();
-		return new JsonObject(dbo.toMap());
+
+		final JsonWriterSettings.Builder jws = JsonWriterSettings.builder();
+		jws.outputMode(JsonMode.STRICT);
+
+		// Convert to JsonObject
+		return new JsonObject(((BasicDBObject) dbo).toJson(jws.build()));
 	}
 
 }
