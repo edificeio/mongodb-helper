@@ -29,6 +29,7 @@ import java.util.Date;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.mongodb.ReadPreference;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -192,7 +193,12 @@ public class MongoDb implements MongoDbAPI {
 	}
 
 	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys, int skip,
-			int limit, int batchSize, DeliveryOptions deliveryOptions, Handler<Message<JsonObject>> callback) {
+					 int limit, int batchSize, DeliveryOptions deliveryOptions, Handler<Message<JsonObject>> callback) {
+		find(collection, matcher, sort, keys, skip, limit, batchSize, deliveryOptions, null, callback);
+	}
+
+	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys, int skip,
+			int limit, int batchSize, DeliveryOptions deliveryOptions, ReadPreference readPreference, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "find");
 		jo.put("collection", collection);
@@ -202,6 +208,9 @@ public class MongoDb implements MongoDbAPI {
 		jo.put("skip", skip);
 		jo.put("limit", limit);
 		jo.put("batch_size", batchSize);
+		if(readPreference != null){
+			jo.put("read_preference", readPreference.getName());
+		}
 		if (deliveryOptions != null) {
 			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
@@ -223,13 +232,21 @@ public class MongoDb implements MongoDbAPI {
 		findOne(collection, matcher, keys, fetch, null, callback);
 	}
 
+	public void findOne(String collection, JsonObject matcher, JsonObject keys, JsonArray fetch, DeliveryOptions deliveryOptions,
+						Handler<Message<JsonObject>> callback) {
+		findOne(collection, matcher, keys, fetch, deliveryOptions, null, callback);
+	}
+
 	public void findOne(String collection, JsonObject matcher, JsonObject keys, JsonArray fetch,
-			DeliveryOptions deliveryOptions, Handler<Message<JsonObject>> callback) {
+			DeliveryOptions deliveryOptions, ReadPreference readPreference, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "findone");
 		jo.put("collection", collection);
 		jo.put("matcher", matcher);
 		jo.put("keys", keys);
+		if(readPreference != null){
+			jo.put("read_preference", readPreference.getName());
+		}
 		if (fetch != null) {
 			jo.put("fetch", fetch);
 		}
@@ -280,10 +297,17 @@ public class MongoDb implements MongoDbAPI {
 	}
 
 	public void count(String collection, JsonObject matcher, Handler<Message<JsonObject>> callback) {
+		count(collection, matcher, null, callback);
+	}
+
+	public void count(String collection, JsonObject matcher, ReadPreference readPreference, Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "count");
 		jo.put("collection", collection);
 		jo.put("matcher", matcher);
+		if(readPreference != null){
+			jo.put("read_preference", readPreference.getName());
+		}
 		eb.send(address, jo, getAdapterHandler(callback));
 	}
 
