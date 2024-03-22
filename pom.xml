@@ -14,6 +14,14 @@
     <artifactId>mongodb-helper</artifactId>
     <version>3.0-b2school-SNAPSHOT</version>
 
+    <repositories>
+        <repository>
+            <id>ode</id>
+            <name>ODE Repository</name>
+            <url>https://maven.opendigitaleducation.com/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+
     <properties>
         <mongo.version>3.12.8</mongo.version>
         <junit.version>4.13.2</junit.version>
