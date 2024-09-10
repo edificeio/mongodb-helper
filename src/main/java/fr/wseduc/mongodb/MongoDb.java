@@ -142,16 +142,18 @@ public class MongoDb implements MongoDbAPI {
 	 * @param objNew       the update corresponds to the SET ... statement
 	 * @param upsert       if true and document doesn't exist, save it
 	 * @param multi        update all document matching query
+	 * @param arrayFilters the filter for array updates
 	 * @param writeConcern
 	 * @param callback
 	 */
 	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
-			WriteConcern writeConcern, Handler<Message<JsonObject>> callback) {
-		update(collection, criteria, objNew, upsert, multi, writeConcern, null, callback);
+					   JsonArray arrayFilters, WriteConcern writeConcern, Handler<Message<JsonObject>> callback) {
+		update(collection, criteria, objNew, upsert, multi, arrayFilters, writeConcern, null, callback);
 	}
 
 	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
-			WriteConcern writeConcern, DeliveryOptions deliveryOptions, Handler<Message<JsonObject>> callback) {
+					   JsonArray arrayFilters, WriteConcern writeConcern, DeliveryOptions deliveryOptions,
+					   Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "update");
 		jo.put("collection", collection);
@@ -159,14 +161,27 @@ public class MongoDb implements MongoDbAPI {
 		jo.put("objNew", objNew);
 		jo.put("upsert", upsert);
 		jo.put("multi", multi);
+		jo.put("arrayFilters", arrayFilters);
+
 		if (writeConcern != null) {
 			jo.put("write_concern", writeConcern.name());
 		}
+
 		if (deliveryOptions != null) {
 			eb.send(address, jo, deliveryOptions, getAdapterHandler(callback));
 		} else {
 			eb.send(address, jo, getAdapterHandler(callback));
 		}
+	}
+
+	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
+			WriteConcern writeConcern, Handler<Message<JsonObject>> callback) {
+		update(collection, criteria, objNew, upsert, multi, null, writeConcern, null, callback);
+	}
+
+	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
+			WriteConcern writeConcern, DeliveryOptions deliveryOptions, Handler<Message<JsonObject>> callback) {
+		update(collection, criteria, objNew, upsert, multi, null, writeConcern, deliveryOptions, callback);
 	}
 
 	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
@@ -185,6 +200,15 @@ public class MongoDb implements MongoDbAPI {
 	public void update(String collection, JsonObject criteria, JsonObject objNew,
 			Handler<Message<JsonObject>> callback) {
 		update(collection, criteria, objNew, false, false, null, callback);
+	}
+
+	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonArray arrayFilters) {
+		update(collection, criteria, objNew, false, false, arrayFilters, null, null);
+	}
+
+	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonArray arrayFilters,
+					   Handler<Message<JsonObject>> callback) {
+		update(collection, criteria, objNew, false, false, arrayFilters,null, callback);
 	}
 
 	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys, int skip,
