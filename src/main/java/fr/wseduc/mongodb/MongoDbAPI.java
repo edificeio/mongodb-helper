@@ -21,9 +21,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.mongodb.DBObject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -81,6 +83,11 @@ public interface MongoDbAPI {
 
 	public void update(String collection, JsonObject criteria, JsonObject objNew,
 			Handler<Message<JsonObject>> callback);
+
+	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonObject arrayFilters);
+
+	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonObject arrayFilters,
+					   Handler<Message<JsonObject>> callback);
 
 	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys, int skip,
 			int limit, int batchSize, Handler<Message<JsonObject>> callback);
