@@ -26,11 +26,9 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
 
-import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
