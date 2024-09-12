@@ -84,9 +84,9 @@ public interface MongoDbAPI {
 	public void update(String collection, JsonObject criteria, JsonObject objNew,
 			Handler<Message<JsonObject>> callback);
 
-	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonObject arrayFilters);
+	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonArray arrayFilters);
 
-	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonObject arrayFilters,
+	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonArray arrayFilters,
 					   Handler<Message<JsonObject>> callback);
 
 	public void find(String collection, JsonObject matcher, JsonObject sort, JsonObject keys, int skip,

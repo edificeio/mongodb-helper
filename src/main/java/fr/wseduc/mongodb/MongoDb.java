@@ -147,12 +147,12 @@ public class MongoDb implements MongoDbAPI {
 	 * @param callback
 	 */
 	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
-					   JsonObject arrayFilters, WriteConcern writeConcern, Handler<Message<JsonObject>> callback) {
+					   JsonArray arrayFilters, WriteConcern writeConcern, Handler<Message<JsonObject>> callback) {
 		update(collection, criteria, objNew, upsert, multi, arrayFilters, writeConcern, null, callback);
 	}
 
 	public void update(String collection, JsonObject criteria, JsonObject objNew, boolean upsert, boolean multi,
-					   JsonObject arrayFilters, WriteConcern writeConcern, DeliveryOptions deliveryOptions,
+					   JsonArray arrayFilters, WriteConcern writeConcern, DeliveryOptions deliveryOptions,
 					   Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "update");
@@ -202,11 +202,11 @@ public class MongoDb implements MongoDbAPI {
 		update(collection, criteria, objNew, false, false, null, callback);
 	}
 
-	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonObject arrayFilters) {
+	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonArray arrayFilters) {
 		update(collection, criteria, objNew, false, false, arrayFilters, null, null);
 	}
 
-	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonObject arrayFilters,
+	public void update(String collection, JsonObject criteria, JsonObject objNew, JsonArray arrayFilters,
 					   Handler<Message<JsonObject>> callback) {
 		update(collection, criteria, objNew, false, false, arrayFilters,null, callback);
 	}
