@@ -30,6 +30,7 @@ import java.util.Date;
 import javax.xml.bind.DatatypeConverter;
 
 import com.mongodb.ReadPreference;
+import io.vertx.core.Promise;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -395,6 +396,35 @@ public class MongoDb implements MongoDbAPI {
 
 	public void aggregate(JsonObject command, final Handler<Message<JsonObject>> handler) {
 		this.command(command.toString(), handler);
+	}
+
+	/**
+	 * Calls aggregation pipeline on a collection.
+	 * @param collection Name of the collection on which the aggregate function should
+	 *                   be called
+	 * @param pipelines Specification of the pipelines to execute
+	 * @return Results of the operation
+	 */
+	public Future<JsonArray> aggregate(final String collection,
+												 final JsonArray pipelines) {
+		final JsonObject jo = new JsonObject()
+		.put("action", "aggregate")
+		.put("collection", collection)
+		.put("pipelines", pipelines);
+		final Promise<JsonArray> promise = Promise.promise();
+		eb.request(address, jo, event -> {
+			if (event.succeeded()) {
+				final JsonObject body = (JsonObject) event.result().body();
+				if(isOk(body)) {
+					promise.complete(body.getJsonArray("results"));
+				} else {
+					promise.fail(body.getString("message"));
+				}
+			} else {
+				promise.fail(event.cause().getMessage());
+			}
+		});
+		return promise.future();
 	}
 
 	public static boolean isOk(JsonObject body) {
