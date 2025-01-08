@@ -310,13 +310,19 @@ public class MongoDb implements MongoDbAPI {
 		sendRequest(jo, null, callback);
 	}
 
-	public void distinct(String collection, String key, JsonObject matcher, Handler<Message<JsonObject>> callback) {
+	public void distinct(String collection, String key, final JsonObject matcher, final String resultClassname,
+											 final Handler<Message<JsonObject>> callback) {
 		JsonObject jo = new JsonObject();
 		jo.put("action", "distinct");
 		jo.put("collection", collection);
 		jo.put("key", key);
 		jo.put("matcher", matcher);
+		jo.put("resultClassname", resultClassname);
 		sendRequest(jo, null, callback);
+	}
+
+	public void distinct(String collection, String key, JsonObject matcher, Handler<Message<JsonObject>> callback) {
+		distinct(collection, key, matcher, null, callback);
 	}
 
 	public void distinct(String collection, String key, Handler<Message<JsonObject>> callback) {
