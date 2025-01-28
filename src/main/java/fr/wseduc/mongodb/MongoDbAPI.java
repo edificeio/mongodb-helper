@@ -19,15 +19,10 @@ package fr.wseduc.mongodb;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
-import com.mongodb.DBObject;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.EventBus;
@@ -184,11 +179,14 @@ public interface MongoDbAPI {
 
 	public static Date parseIsoDate(JsonObject date) {
 		Object d = date.getValue("$date");
-		if (d instanceof Long) {
+		if(d == null) {
+			return null;
+		} else if (d instanceof Long) {
 			return new Date((Long) d);
 		} else {
-			Calendar c = DatatypeConverter.parseDateTime((String) d);
-			return c.getTime();
+			// TODO java21 check if it works
+			long ts = ZonedDateTime.parse((String) d, DateTimeFormatter.ISO_DATE_TIME).toInstant().toEpochMilli();
+			return new Date(ts);
 		}
 	}
 
