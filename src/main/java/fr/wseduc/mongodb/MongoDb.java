@@ -537,7 +537,7 @@ public class MongoDb implements MongoDbAPI {
 
 	public static JsonObject offsetFromNow(long offsetInSeconds)
 	{
-		return toMongoDateISO(new Date(System.currentTimeMillis() + offsetInSeconds));
+		return toMongoDateISO(new Date(System.currentTimeMillis() + (offsetInSeconds * 1000)));
 	}
 
 	public static Date parseIsoDate(JsonObject date) {
