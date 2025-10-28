@@ -405,7 +405,7 @@ public class MongoDb implements MongoDbAPI {
 		.put("collection", collection)
 		.put("pipelines", pipelines);
 		final Promise<JsonArray> promise = Promise.promise();
-		eb.request(address, jo, event -> {
+		eb.request(address, jo, new DeliveryOptions().setLocalOnly(true), event -> {
 			if (event.succeeded()) {
 				final JsonObject body = (JsonObject) event.result().body();
 				if(isOk(body)) {
@@ -572,10 +572,11 @@ public class MongoDb implements MongoDbAPI {
 		Future<Message<JsonObject>> future;
 		Handler<AsyncResult<Message<JsonObject>>> handler;
 		if (deliveryOptions == null) {
-			future = eb.request(address, payload);
+            final DeliveryOptions localDO = new DeliveryOptions().setLocalOnly(true);
+			future = eb.request(address, payload, localDO);
 			handler = getAdapterHandler(callback);
 		} else {
-			future = eb.request(address, payload, deliveryOptions);
+			future = eb.request(address, payload, new DeliveryOptions(deliveryOptions).setLocalOnly(true));
 			handler = getAdapterHandler(callback);
 		}
 		return future.onComplete(e -> {
