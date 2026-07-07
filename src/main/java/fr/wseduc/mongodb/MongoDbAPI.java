@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
+import java.time.OffsetDateTime;
 
 import com.mongodb.DBObject;
 import io.vertx.core.AsyncResult;
@@ -187,8 +187,7 @@ public interface MongoDbAPI {
 		if (d instanceof Long) {
 			return new Date((Long) d);
 		} else {
-			Calendar c = DatatypeConverter.parseDateTime((String) d);
-			return c.getTime();
+			return Date.from(OffsetDateTime.parse((String) d).toInstant());
 		}
 	}
 
